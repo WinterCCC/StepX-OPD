@@ -1,0 +1,85 @@
+run_name: sd35m_opd_wb
+output_dir: /path/to/output_dir  # PLACEHOLDER
+
+# ---------------------------------------------------------------- weights ----
+base_model_path: /path/to/stable-diffusion-3.5-medium  # PLACEHOLDER
+# Rank-160 adapter folded into the base weights before the fresh student
+# adapter is created. This is the supervised starting point the recipe begins
+# from, not an auxiliary input.
+init_lora_merge_path: /path/to/sft_merge_additive  # PLACEHOLDER
+
+lora_rank: 32
+lora_alpha: 64
+
+# Three frozen expert teachers, one per training source. `source` is the key
+# the data router matches on, so these entries define the routing table.
+teachers:
+  - name: geneval
+    source: geneval
+    lora_path: /path/to/geneval_teacher_lora  # PLACEHOLDER
+  - name: ocr
+    source: ocr
+    lora_path: /path/to/ocr_teacher_lora  # PLACEHOLDER
+  - name: aesthetic
+    source: pickscore
+    lora_path: /path/to/aes_teacher_lora  # PLACEHOLDER
+
+# ------------------------------------------------------------------- data ----
+source_files:
+  geneval: /path/to/geneval_train_metadata.jsonl  # PLACEHOLDER
+  ocr: /path/to/ocr_train.txt  # PLACEHOLDER
+  pickscore: /path/to/pickscore_train.txt  # PLACEHOLDER
+source_weights:
+  geneval: 1
+  ocr: 1
+  pickscore: 1
+data_seed: 42
+noise_seed: 1234
+
+# --------------------------------------------------------------- sampling ----
+resolution: 512
+num_inference_steps: 4
+max_t5_length: 256
+negative_prompt: " "
+teacher_guidance_scale: 4.5
+
+# -------------------------------------------------------------- objective ----
+pseudo_huber_c_coef: 0.00054
+critic_omega_eps: 0.05
+
+# Low-noise velocity regression. The gate fires once the drawn supervision time
+# falls in the low-noise half of the range and the schedule has passed the start
+# step; `lownoise_vmse_wb` turns on the per-sample w_b weighting that defines
+# this variant. Because the weight is normalised to unit batch mean, the term's
+# coefficient is the same as in the unweighted recipe.
+lownoise_vmse_weight: 0.5
+lownoise_vmse_start_step: 500
+lownoise_tau_threshold: 0.5
+lownoise_vmse_wb: true
+wb_omega_mode: upper
+wb_omega_eps: 0.05
+wb_omega_normalize: true
+
+# ---------------------------------------------------------------- training ----
+# Per-rank batch; the global batch is this times the number of ranks. The
+# reference run used 128 per rank over 2 sharded ranks, i.e. a global batch
+# of 256. This release replicates every backbone per rank instead of sharding
+# them, so the value that fits depends on the card: 64 per rank peaks at
+# 54.6 GB, which reproduces the reference global batch of 256 on four ranks.
+train_batch_size: 64
+max_train_steps: 5000
+student_lr: 2.0e-6
+critic_lr: 1.0e-5
+betas: [0.0, 0.999]
+weight_decay: 1.0e-2
+warmup_steps: 200
+critic_warmup_steps: 200
+clip_grad_norm: 1.0
+
+# Until this step the teacher is the student's own frozen starting point, which
+# makes the first phase self-distillation; afterwards the source router hands
+# each step to its expert.
+teacher_warmup_steps: 200
+
+log_interval: 1
+save_interval: 250

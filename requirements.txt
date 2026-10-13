@@ -1,0 +1,13 @@
+# Versions this release was exercised with. Older diffusers releases are likely
+# to work, but the scheduler's handling of custom sigmas plus `mu` changed over
+# time and the sampling grid depends on it, so pin if you need bit-reproducible
+# images.
+torch==2.8.0
+diffusers==0.36.0
+transformers==4.57.1
+peft==0.17.1
+safetensors==0.7.0
+sentencepiece==0.2.1
+numpy==2.2.6
+Pillow==12.2.0
+PyYAML==6.0.2
