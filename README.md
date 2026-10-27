@@ -34,8 +34,6 @@ pip install -r requirements.txt
 | SD3.5-Medium base | https://huggingface.co/stabilityai/stable-diffusion-3.5-medium |
 | StepX-OPD LoRA weights | https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5 |
 | Three expert teacher adapters | https://huggingface.co/quanhaol/DiffusionOPD (published with the DiffusionOPD release) |
-| SFT initialization soup | not publicly released |
-| Prompt files for the three training sources | not publicly released |
 
 These are the `PLACEHOLDER` entries to fill in `configs/sd35m_wb.yaml`; the base model entry takes a local directory, not a hub id.
 
