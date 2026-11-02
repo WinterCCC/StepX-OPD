@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-export CUDA_VISIBLE_DEVICES="${GPUS:-0,1,2,3}"
+export CUDA_VISIBLE_DEVICES="${GPUS:-0,1,2,3,4,5,6,7}"
 NPROC="${NPROC:-$(awk -F, '{print NF}' <<<"$CUDA_VISIBLE_DEVICES")}"
 CONFIG="${CONFIG:-configs/sd35m_wb.yaml}"
 MASTER_PORT="${MASTER_PORT:-29531}"

@@ -1,12 +1,14 @@
 StepX-OPD
-Copyright 2026 StepX-OPD authors
 
-This product includes software derived from the DiffusionOPD codebase
-(https://github.com/ali-vilab/DiffusionOPD), licensed under the Apache
-License, Version 2.0. Its SD3 multi-teacher training script supplied the
-prompt datasets, the prompt-encoding path, and the low-rank adapter
-assembly.
+Copyright (c) 2026 StepFun AI. All rights reserved.
 
-The weights this code produces apply on top of Stable Diffusion 3.5
-Medium and are therefore subject to the Stability AI Community License
-that governs that base model.
+This product includes software developed at StepFun AI. (https://stepfun.ai/).
+
+This project distributes the following third-party components, each under its own license. The full text of each license is in LICENSE or in the component's directory.
+
+----------------------------------------------------------------
+Component Name: DiffusionOPD
+Source: https://github.com/ali-vilab/DiffusionOPD
+License: Apache-2.0
+License Text: LICENSE
+----------------------------------------------------------------

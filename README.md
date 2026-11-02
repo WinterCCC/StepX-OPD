@@ -32,15 +32,26 @@ pip install -r requirements.txt
 | Asset | Link |
 |---|---|
 | SD3.5-Medium base | https://huggingface.co/stabilityai/stable-diffusion-3.5-medium |
-| StepX-OPD LoRA weights | https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5 |
+| StepX-OPD LoRA weights (folded inference LoRA) | https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5 |
 | Three expert teacher adapters | https://huggingface.co/quanhaol/DiffusionOPD (published with the DiffusionOPD release) |
+| SFT-augmented additive initialization | https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5/tree/main/additive_init |
 
 These are the `PLACEHOLDER` entries to fill in `configs/sd35m_wb.yaml`; the base model entry takes a local directory, not a hub id.
 
-### 3. Train
+The additive initialization is a PEFT adapter directory. Download it with
 
 ```bash
-GPUS=0,1,2,3 CONFIG=configs/sd35m_wb.yaml bash scripts/launch_train_wb.sh
+huggingface-cli download ShimaRinC/StepX-OPD-SD3.5 --include "additive_init/*" --local-dir ./StepX-OPD-SD3.5
+```
+
+and pass `./StepX-OPD-SD3.5/additive_init` as `init_lora_merge_path` in `configs/sd35m_wb.yaml` for training, or as `--init_merge` to `scripts/generate_sd35_4step.py`. Training merges it into the SD3.5-Medium transformer before creating the rank-32 student adapters, so it is the starting point for training rather than a standalone four-step model.
+
+### 3. Train
+
+The reported setting uses 8 NVIDIA H800 GPUs with a per-rank batch size of 32, for a global batch size of 256.
+
+```bash
+GPUS=0,1,2,3,4,5,6,7 CONFIG=configs/sd35m_wb.yaml bash scripts/launch_train_wb.sh
 ```
 
 `OVERRIDE` takes inline YAML merged over the config file, which is how to shorten a run or shrink the batch for a smoke test:
@@ -54,19 +65,45 @@ OVERRIDE='{max_train_steps: 40, train_batch_size: 4}' bash scripts/launch_train_
 ```bash
 python scripts/generate_sd35_4step.py \
     --base /path/to/stable-diffusion-3.5-medium \
-    --init_merge /path/to/sft_merge_additive \
+    --init_merge ./StepX-OPD-SD3.5/additive_init \
     --adapter /path/to/checkpoint-step-<N> \
     --prompts prompts.json \
     --out_dir out/ \
     --seeds 0 --steps 4 --cfg 1.0 --size 512
 ```
 
-This script uses the sampling grid the model is evaluated with. Substituting another sampling pipeline's default grid lowers the benchmark scores, most visibly on image quality.
+`--init_merge` takes the `additive_init` directory downloaded above, and `--adapter` takes a checkpoint directory written by training with this code. This script uses the sampling grid the model is evaluated with. Substituting another sampling pipeline's default grid lowers the benchmark scores, most visibly on image quality.
+
+### 5. Inference with diffusers
+
+To generate images without the training code, load the folded inference LoRA directly with diffusers. It already contains the additive initialization, so `additive_init` is not needed here.
+
+```python
+import numpy as np
+import torch
+from diffusers import StableDiffusion3Pipeline
+
+pipe = StableDiffusion3Pipeline.from_pretrained(
+    "stabilityai/stable-diffusion-3.5-medium", torch_dtype=torch.bfloat16
+).to("cuda")
+pipe.load_lora_weights("ShimaRinC/StepX-OPD-SD3.5")
+
+image = pipe(
+    "a corgi wearing sunglasses, studio photo",
+    num_inference_steps=4,
+    guidance_scale=1.0,
+    sigmas=np.linspace(1.0, 1.0 / 4, 4),
+    height=512,
+    width=512,
+    generator=torch.Generator("cuda").manual_seed(0),
+).images[0]
+image.save("out.png")
+```
 
 ## 🔁 Resuming a Run
 
 ```bash
-GPUS=0,1,2,3 \
+GPUS=0,1,2,3,4,5,6,7 \
 RESUME_FROM=/path/to/run/checkpoint/checkpoint-step-<N> \
     bash scripts/launch_train_wb.sh
 ```
@@ -79,7 +116,11 @@ The project page is at https://winterccc.github.io/Step-OPD/, and the trained we
 
 ## 📄 License
 
-Apache License 2.0, see `LICENSE`. The code is derived from the DiffusionOPD codebase, which carries the same license, and `NOTICE` records that attribution. Weights produced with this code apply on top of Stable Diffusion 3.5 Medium and are subject to the Stability AI Community License that governs that base model.
+This project is licensed under the Apache-2.0 License (see [LICENSE](LICENSE)). Where accompanying materials in this repository are marked as subject to different license terms, such materials are governed by those terms.
+
+Third-party components distributed with this project are licensed under their own terms (see [NOTICE](NOTICE)).
+
+The model weights on Hugging Face are derived from Stable Diffusion 3.5 Medium and are distributed separately under the Stability AI Community License Agreement; see https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5.
 
 ## 📚 Citation
 

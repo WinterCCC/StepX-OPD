@@ -62,11 +62,9 @@ wb_omega_normalize: true
 
 # ---------------------------------------------------------------- training ----
 # Per-rank batch; the global batch is this times the number of ranks. The
-# reference run used 128 per rank over 2 sharded ranks, i.e. a global batch
-# of 256. This release replicates every backbone per rank instead of sharding
-# them, so the value that fits depends on the card: 64 per rank peaks at
-# 54.6 GB, which reproduces the reference global batch of 256 on four ranks.
-train_batch_size: 64
+# reported setting uses 32 per rank over 8 ranks, a global batch of 256. On
+# four ranks, 64 per rank gives the same global batch and peaks at 54.6 GB.
+train_batch_size: 32
 max_train_steps: 5000
 student_lr: 2.0e-6
 critic_lr: 1.0e-5
