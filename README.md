@@ -2,7 +2,7 @@
 
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://winterccc.github.io/Step-OPD/)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-StepX--OPD--SD3.5-yellow)](https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5)
-![Paper](https://img.shields.io/badge/Paper-coming%20soon-lightgrey)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.04386-b31b1b)](https://arxiv.org/abs/2611.04386)
 
 ![StepX-OPD training cost and four-step benchmark coverage](assets/teaser_gpu_hours_radar_300dpi.png)
 
@@ -112,7 +112,7 @@ The launch must use the same number of ranks and the same config that wrote the 
 
 ## 🔗 Related Links
 
-The project page is at https://winterccc.github.io/Step-OPD/, and the trained weights are published at https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5.
+The paper is at https://arxiv.org/abs/2611.04386, the project page is at https://winterccc.github.io/Step-OPD/, and the trained weights are published at https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5.
 
 ## 📄 License
 
@@ -124,7 +124,17 @@ The model weights on Hugging Face are derived from Stable Diffusion 3.5 Medium a
 
 ## 📚 Citation
 
-The paper this code accompanies has not been published yet. Citation information will be added here once it is released.
+```bibtex
+@misc{wang2026stepxopdrethinkingmultiteacheronpolicy,
+      title={StepX-OPD: Rethinking Multi-Teacher On-Policy Distillation in Diffusion Models}, 
+      author={Chenru Wang and Xuanyang Zhang and Yucheng Han and Wenbo Nie and Wei Cheng and Xianfang Zeng and Gang YU and Chi Zhang},
+      year={2026},
+      eprint={2611.04386},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2611.04386}, 
+}
+```
 
 ## 📭 Contact
 
