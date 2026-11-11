@@ -3,6 +3,7 @@
 [![Project Page](https://img.shields.io/badge/Project-Page-blue)](https://winterccc.github.io/Step-OPD/)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-StepX--OPD--SD3.5-yellow)](https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5)
 [![arXiv](https://img.shields.io/badge/arXiv-2611.04386-b31b1b)](https://arxiv.org/abs/2611.04386)
+[![Demo](https://img.shields.io/badge/%F0%9F%A4%97%20Demo-Spaces-orange)](https://huggingface.co/spaces/hugging-apps/stepx-opd)
 
 ![StepX-OPD training cost and four-step benchmark coverage](assets/teaser_gpu_hours_radar_300dpi.png)
 
@@ -112,7 +113,7 @@ The launch must use the same number of ranks and the same config that wrote the 
 
 ## 🔗 Related Links
 
-The paper is at https://arxiv.org/abs/2611.04386, the project page is at https://winterccc.github.io/Step-OPD/, and the trained weights are published at https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5.
+The paper is at https://arxiv.org/abs/2611.04386, the project page is at https://winterccc.github.io/Step-OPD/, and the trained weights are published at https://huggingface.co/ShimaRinC/StepX-OPD-SD3.5. An interactive demo runs on Hugging Face Spaces at https://huggingface.co/spaces/hugging-apps/stepx-opd. Thanks to Apolinário and the Hugging Face open-source team for building it.
 
 ## 📄 License
 
